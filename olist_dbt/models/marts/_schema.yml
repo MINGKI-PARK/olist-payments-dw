@@ -1,0 +1,95 @@
+# 마트 레이어(차원/팩트 테이블)에 대한 테스트 정의
+version: 2
+
+models:
+  - name: dim_customers
+    columns:
+      - name: customer_id
+        tests:
+          # 고객 차원의 기본 키는 중복되면 안 되고, 비어있으면 안 됨
+          - unique
+          - not_null
+
+  - name: dim_sellers
+    columns:
+      - name: seller_id
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_products
+    columns:
+      - name: product_id
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_date
+    columns:
+      - name: date_key
+        tests:
+          - unique
+          - not_null
+
+  - name: fact_order_payments
+    columns:
+      - name: payment_key
+        tests:
+          # 서로게이트 키가 유일해야 "결제 1건당 1행"이라는 그레인이 지켜지고 있다는 뜻
+          - unique
+          - not_null
+      - name: customer_id
+        tests:
+          - not_null
+          # fact의 customer_id가 dim_customers.customer_id에 실제로 존재하는지 확인 (참조 무결성)
+          - relationships:
+              arguments:
+                to: ref('dim_customers')
+                field: customer_id
+      - name: order_purchase_date
+        tests:
+          # fact의 날짜가 dim_date에 존재하는 날짜인지 확인 (dim_date 범위를 벗어난 주문이 없는지 검증)
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
+      - name: payment_type
+        tests:
+          # Olist 데이터셋에 정의된 결제 수단 목록 밖의 값이 들어오면 이상 데이터로 감지
+          - accepted_values:
+              arguments:
+                values: ['credit_card', 'boleto', 'voucher', 'debit_card', 'not_defined']
+
+  - name: fact_order_items
+    columns:
+      - name: order_item_key
+        tests:
+          - unique
+          - not_null
+      - name: product_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_products')
+                field: product_id
+      - name: seller_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_sellers')
+                field: seller_id
+      - name: customer_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_customers')
+                field: customer_id
+      - name: order_purchase_date
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key

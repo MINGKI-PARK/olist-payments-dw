@@ -4,7 +4,14 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "apache-airflow>=3.3.2",
+    "dbt-bigquery>=1.12.1",
+    "google-cloud-bigquery>=3.45.2",
+    "pandas>=3.0.6",
+    "pyarrow>=25.0.1",
+    "pyspark>=4.2.0",
+]
 
 [project.scripts]
 olist-payments-dw = "olist_payments_dw:main"
@@ -12,3 +19,15 @@ olist-payments-dw = "olist_payments_dw:main"
 [build-system]
 requires = ["uv_build>=0.12.15,<0.13.0"]
 build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.16.8",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]

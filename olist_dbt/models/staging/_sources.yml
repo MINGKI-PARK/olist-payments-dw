@@ -1,0 +1,16 @@
+# dbt에게 "이 테이블들은 우리가 직접 관리하는 게 아니라, 외부(BigQuery raw 데이터셋)에서 가져온 원본 데이터다"라고 알려주는 파일
+# 이렇게 소스로 등록해두면 모델 파일 안에서 source('raw', '테이블명') 형태로 참조할 수 있음
+version: 2
+
+sources:
+  - name: raw # 이 이름으로 source() 함수에서 참조하게 됨 (예: source('raw', 'orders'))
+    database: olist-payments-dw # GCP 프로젝트 ID
+    schema: raw # BigQuery 데이터셋 이름
+    tables:
+      - name: orders
+      - name: customers
+      - name: order_items
+      - name: order_payments
+      - name: sellers
+      - name: products
+      - name: product_category_translation
