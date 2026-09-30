@@ -18,3 +18,7 @@ airflow.cfg
 logs/
 data/raw/
 data/processed/
+
+# Airflow: SQLite 임시 파일 + admin 비밀번호 파일
+airflow.db-*
+simple_auth_manager_passwords.json.generated
